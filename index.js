@@ -14,7 +14,8 @@ interestRate: 7,
 maxLoan: 1000000,
 minPayment: 5000,
 loanTerm: 50,
-},
+  },
+
 ];
 
 // Проект: Mortgage
@@ -42,13 +43,80 @@ loanTerm: 50,
 // 1. В index.html має бути лише один <div id=“”root”“> </div> В нього буде рендеритись вся розмітка застосунку.
 // Створити в JS 2 < div >.Добавити їх в ДОМ. Зробити мінімальну стилізацію.
 
+const root = document.querySelector('#root');
+
+const bankListWrap = document.createElement('div');
+bankListWrap.classList.add('bank-list-wrap');
+const bankDescWrap = document.createElement('div');
+bankDescWrap.classList.add('bank-desc-wrap');
+
+root.append(bankListWrap, bankDescWrap);
+
 // 2. Написати функцію renderBankList, яка створює розмітку для всіх лішок списка банків і додає їх в середину ul.
 // Усе стилізувати і добавити в лівий блок.Також, туди ж добавити кнопку “”Добавити новий банк“”.
+
+const bankListUl = document.createElement('ul');
+const bankListBtn = document.createElement('button');
+bankListBtn.classList.add('bank-list-button');
+bankListBtn.textContent = 'Добавити новий банк';
+bankListBtn.type = 'button';
+bankListUl.classList.add('bank-list');
+bankListWrap.append(bankListUl, bankListBtn);
+
+function renderBankList(array) {
+  return array.map(item => `<li class="bank-list__item">
+  <a data-id="${item.id}" class="bank-list__title">${item.name}</a>
+  <button class="bank-list__btn">редагувати</button>
+  <button class="bank-list__btn">видалити</button>
+  </li>`).join('');
+};
+
+bankListUl.insertAdjacentHTML('beforeend', renderBankList(banks));
+
 
 // 3. При клікові на кожну з назв банку в лівому блоці - спочатку в консоль вивести назву вибраного банка в текстовому форматі.
 // Якщо все ок - вивести в консоль уже сам об‘єкт вибраного банку.
 
+function onClickBankName(e) {
+  console.log(e.target.textContent)
+  banks.map(item => {
+    if (e.target.textContent === item.name) {
+      console.log(item)
+    };
+  });
+};
+
 // 4. При клікові на кожну з назв банку в лівій частині - рендерити інфу вибраного банка в правій частині.
+
+// id: 'asdfw342rew5',
+// name: 'Privat',
+// interestRate: 7,
+// maxLoan: 1000000,
+// minPayment: 5000,
+// loanTerm: 50,
+
+function renderBankDesc(array) {
+  return `<div class="bank-desc-list">
+  <p class="bank-desc-list__text">Назва банку: ${array.name}</p>
+  <p class="bank-desc-list__text">Річна відсоткова ставка по іпотеці: ${array.interestRate}%</p>
+  <p class="bank-desc-list__text">Максимальна сума кредиту, яку надає банк: ${array.maxLoan}$</p>
+  <p class="bank-desc-list__text">Мінімальний платіж: ${array.minPayment}$</p>
+  <p class="bank-desc-list__text">Термін кредиту: ${array.loanTerm} міс.</p>
+  </div>`
+};
+
+const bankListEl = document.querySelector('.bank-list');
+
+function onClickBankName(e) {
+  bankDescWrap.innerHTML = '';
+  banks.map(item => {
+    if (e.target.textContent === item.name) {
+      bankDescWrap.insertAdjacentHTML('beforeend', renderBankDesc(item));
+    };
+  });
+};
+
+bankListEl.addEventListener('click', onClickBankName);
 
 // 5. Додати слухачі на кнопки Edit та Delete і вивести в консоль назву кнопки по якій клікаэмо. Наприклад, “Edit”, “Delete”
 
