@@ -49,6 +49,7 @@ const bankListWrap = document.createElement('div');
 bankListWrap.classList.add('bank-list-wrap');
 const bankDescWrap = document.createElement('div');
 bankDescWrap.classList.add('bank-desc-wrap');
+bankDescWrap.classList.add('none');
 
 root.append(bankListWrap, bankDescWrap);
 
@@ -64,36 +65,16 @@ bankListUl.classList.add('bank-list');
 bankListWrap.append(bankListUl, bankListBtn);
 
 function renderBankList(array) {
-  return array.map(item => `<li class="bank-list__item">
-  <a data-id="${item.id}" class="bank-list__title">${item.name}</a>
-  <button class="bank-list__btn">редагувати</button>
-  <button class="bank-list__btn">видалити</button>
+  return array.map(item => `<li data-id="${item.id}" class="bank-list__item">
+  <a class="bank-list__title">${item.name}</a>
+  <button data-action="edit" class="bank-list__btn">редагувати</button>
+  <button data-action="delete" class="bank-list__btn">видалити</button>
   </li>`).join('');
 };
 
-bankListUl.insertAdjacentHTML('beforeend', renderBankList(banks));
+bankListUl.innerHTML = renderBankList(banks);
 
-
-// 3. При клікові на кожну з назв банку в лівому блоці - спочатку в консоль вивести назву вибраного банка в текстовому форматі.
-// Якщо все ок - вивести в консоль уже сам об‘єкт вибраного банку.
-
-function onClickBankName(e) {
-  console.log(e.target.textContent)
-  banks.map(item => {
-    if (e.target.textContent === item.name) {
-      console.log(item)
-    };
-  });
-};
-
-// 4. При клікові на кожну з назв банку в лівій частині - рендерити інфу вибраного банка в правій частині.
-
-// id: 'asdfw342rew5',
-// name: 'Privat',
-// interestRate: 7,
-// maxLoan: 1000000,
-// minPayment: 5000,
-// loanTerm: 50,
+// 3. При клікові на кожну з назв банку в лівій частині - рендерити інфу вибраного банка в правій частині.
 
 function renderBankDesc(array) {
   return `<div class="bank-desc-list">
@@ -108,6 +89,7 @@ function renderBankDesc(array) {
 const bankListEl = document.querySelector('.bank-list');
 
 function onClickBankName(e) {
+  bankDescWrap.classList.remove('none');
   bankDescWrap.innerHTML = '';
   banks.map(item => {
     if (e.target.textContent === item.name) {
@@ -118,23 +100,85 @@ function onClickBankName(e) {
 
 bankListEl.addEventListener('click', onClickBankName);
 
-// 5. Додати слухачі на кнопки Edit та Delete і вивести в консоль назву кнопки по якій клікаэмо. Наприклад, “Edit”, “Delete”
+// 4. Додати слухачі на кнопки Edit та Delete і вивести в консоль назву кнопки по якій клікаэмо. Наприклад, “Edit”, “Delete”
 
-// 6. Написати логіку функції створення нового банку, яка викликатиметься через клік по кнопці “Добавити новий банк“.
+function onClickBtn(e) {
+  const { action } = e.target.dataset;
+  const parent = e.target.closest('li');
+  const { id } = parent?.dataset || {};
+
+  switch (action) {
+    case 'edit':
+      editBank(id, parent);
+      break;
+    
+    case 'delete':
+      deleteBank(id, parent);
+      break;
+  };
+};
+
+bankListEl.addEventListener('click', onClickBtn);
+
+// 5. Написати логіку функції створення нового банку, яка викликатиметься через клік по кнопці “Добавити новий банк“.
+
+function renderNewBank() {
+  const markup = '<form class="new-bank-form"><input data="name" placeholder="Name" class="new-bank-input" required><input data="interest-rate" placeholder="Interest Rate" class="new-bank-input" required><input data="max-loan" placeholder="Max Loan" class="new-bank-input" required><input data="min-payment" placeholder="Min Payment" class="new-bank-input" required><input data="loan-term" placeholder="Loan Term" class="new-bank-input" required><button type="submit" class="new-bank-btn">Додати</button></form>';
+  return markup
+};
+
+function onClickAddBank() {
+  bankListBtn.classList.add('none');
+
+  bankListWrap.insertAdjacentHTML('beforeend', renderNewBank());
+
+  const formNewBank = document.querySelector('.new-bank-form')
+  const nameInput = document.querySelector('input[data="name"]');
+  const interestRateInput = document.querySelector('input[data="interest-rate"]');
+  const maxLoanInput = document.querySelector('input[data="max-loan"]');
+  const minPaymentInput = document.querySelector('input[data="min-payment"]');
+  const loanTermInput = document.querySelector('input[data="loan-term"]');
+
+  formNewBank.addEventListener('submit', createNewBank);
+
+  function createNewBank(e) {
+    e.preventDefault();
+    bankListBtn.classList.remove('none');
+    
+  const newBank = {
+    id: new Date(),
+    name: nameInput.value.trim(),
+    interestRate: interestRateInput.value.trim(),
+    maxLoan: maxLoanInput.value.trim(),
+    minPayment: minPaymentInput.value.trim(),
+    loanTerm: loanTermInput.value.trim(),
+  };
+
+    banks.push(newBank);
+    bankListUl.innerHTML = renderBankList(banks);
+    formNewBank.remove();
+  };
+};
+
+bankListBtn.addEventListener('click', onClickAddBank);
+
+// 6. Написати логіку функції видалення банку.
+
+function deleteBank(id, parent) {
+  const indexIdTask = banks.findIndex((bank) => id === bank.id);
+  banks.splice(indexIdTask, 1);
+
+  bankDescWrap.classList.add('none');
+  parent.remove();
+};
 
 // 7. Написати логіку функції редагування банку.
 
-// 8. Написати логіку функції видалення банку.
+function editBank(id) {
+  console.log("Edit");
+};
 
-// 9. Переписати код слухача подій не на кожну li списка банків, а на саму ul. Відловлювати на ul клік по самій лішці.
+// 8. Реалізувати роботу списка банків з локал сторедж. Щоб при перезавантаженні сторінки список зберігався.
 
-// 10. Реалізувати роботу списка банків з локал сторедж. Щоб при перезавантаженні сторінки список зберігався.
-
-// 11. Створити логіку роботи кнопки “Очистити” - коли створено більше 3х банків в списку - кнопа відмальовується.
+// 9. Створити логіку роботи кнопки “Очистити” - коли створено більше 3х банків в списку - кнопа відмальовується.
 // В решті випадків - кнопки не повинно бути.При клікові на кнопку - очищається весь список банків.
-
-// 12. Зробити пошук банків по назві. Сам інпут для пошука має з’явитись коли кількість банків в колекції буде більше 5.
-// При введені більше 2х літер в інпут - шукаємо співпадіння в назвах банків та виводимо їх в список.
-
-
-

@@ -84,6 +84,10 @@ body {
   border-radius: 5px;
 }
 
+.none {
+  display: none;
+}
+
 .bank-desc-list {
   display: flex;
   flex-direction: column;
@@ -94,5 +98,29 @@ body {
   padding: 5px;
   font-size: 25px;
   border: 1px solid black;
+  border-radius: 5px;
+}
+
+.new-bank-form {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  bottom: 5%;
+  left: 20%;
+  width: 300px;
+}
+
+.new-bank-input {
+  padding: 10px;
+  height: 30px;
+  font-size: 12px;
+  border-radius: 5%;
+}
+
+.new-bank-btn {
+  height: 30px;
+  font-size: 12px;
+  background-color: transparent;
   border-radius: 5px;
 }
