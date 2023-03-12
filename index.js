@@ -139,6 +139,7 @@ function onClickAddBank() {
 
     banks.push(newBank);
     saveBanks();
+    addDestroyBtn();
     bankListUl.innerHTML = renderBankList(banks);
     formNewBank.remove();
   };
@@ -154,6 +155,7 @@ function deleteBank(id, parent) {
 
   saveBanks();
   bankDescWrap.classList.add('none');
+  addDestroyBtn();
   parent.remove();
 };
 
@@ -191,11 +193,12 @@ destroyBtn.classList.add('none');
 destroyBtn.textContent = 'Очистити';
 
 bankListWrap.append(destroyBtn);
-addDestroyBtn();
 
 function addDestroyBtn() {
 if (banks.length >= 3) {
   destroyBtn.classList.remove('none');
+  } else if (banks.length < 3) {
+  destroyBtn.classList.add('none');
 };
 };
 
