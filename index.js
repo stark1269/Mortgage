@@ -1,23 +1,3 @@
-const banks = [
-{
-id: '435tr34wrt',
-name: 'Mono',
-interestRate: 5,
-maxLoan: 500000,
-minPayment: 1000,
-loanTerm: 12,
-},
-{
-id: 'asdfw342rew5',
-name: 'Privat',
-interestRate: 7,
-maxLoan: 1000000,
-minPayment: 5000,
-loanTerm: 50,
-  },
-
-];
-
 // Проект: Mortgage
 // Суть додатку:
 // Юзер пройшовся по різним банкам, щоб обрати вигідний курс іпотеки.
@@ -39,6 +19,8 @@ loanTerm: 50,
 // - Кнопка для створення нового банку. Має бути окремо одна на весь блок
 
 // ================================================================================================================================ //
+
+let banks = [];
 
 // 1. В index.html має бути лише один <div id=“”root”“> </div> В нього буде рендеритись вся розмітка застосунку.
 // Створити в JS 2 < div >.Добавити їх в ДОМ. Зробити мінімальну стилізацію.
@@ -72,6 +54,7 @@ function renderBankList(array) {
   </li>`).join('');
 };
 
+loadBanks();
 bankListUl.innerHTML = renderBankList(banks);
 
 // 3. При клікові на кожну з назв банку в лівій частині - рендерити інфу вибраного банка в правій частині.
@@ -123,7 +106,7 @@ bankListEl.addEventListener('click', onClickBtn);
 // 5. Написати логіку функції створення нового банку, яка викликатиметься через клік по кнопці “Добавити новий банк“.
 
 function renderNewBank() {
-  const markup = '<form class="new-bank-form"><input data="name" placeholder="Name" class="new-bank-input" required><input data="interest-rate" placeholder="Interest Rate" class="new-bank-input" required><input data="max-loan" placeholder="Max Loan" class="new-bank-input" required><input data="min-payment" placeholder="Min Payment" class="new-bank-input" required><input data="loan-term" placeholder="Loan Term" class="new-bank-input" required><button type="submit" class="new-bank-btn">Додати</button></form>';
+  const markup = '<form class="new-bank-form"><input type="text" data="name" placeholder="Name" class="new-bank-input" required><input type="number" data="interest-rate" placeholder="Interest Rate" class="new-bank-input" required><input type="number" data="max-loan" placeholder="Max Loan" class="new-bank-input" required><input type="number" data="min-payment" placeholder="Min Payment" class="new-bank-input" required><input type="number" data="loan-term" placeholder="Loan Term" class="new-bank-input" required><button type="submit" class="new-bank-btn">Додати</button></form>';
   return markup
 };
 
@@ -155,6 +138,7 @@ function onClickAddBank() {
   };
 
     banks.push(newBank);
+    saveBanks();
     bankListUl.innerHTML = renderBankList(banks);
     formNewBank.remove();
   };
@@ -168,6 +152,7 @@ function deleteBank(id, parent) {
   const indexIdTask = banks.findIndex((bank) => id === bank.id);
   banks.splice(indexIdTask, 1);
 
+  saveBanks();
   bankDescWrap.classList.add('none');
   parent.remove();
 };
@@ -180,5 +165,43 @@ function editBank(id) {
 
 // 8. Реалізувати роботу списка банків з локал сторедж. Щоб при перезавантаженні сторінки список зберігався.
 
+function saveBanks() {
+  try {
+      localStorage.setItem('All banks', JSON.stringify(banks));
+    } catch (error) {
+      console.error('error');
+    };
+};
+
+function loadBanks() {
+  try {
+      banks = JSON.parse(localStorage.getItem('All banks')) || [];
+    } catch (error) {
+      console.error('error');
+    };
+};
+
 // 9. Створити логіку роботи кнопки “Очистити” - коли створено більше 3х банків в списку - кнопа відмальовується.
 // В решті випадків - кнопки не повинно бути.При клікові на кнопку - очищається весь список банків.
+
+const destroyBtn = document.createElement('button');
+destroyBtn.type = 'button';
+destroyBtn.classList.add('destroy-btn');
+destroyBtn.classList.add('none');
+destroyBtn.textContent = 'Очистити';
+
+bankListWrap.append(destroyBtn);
+addDestroyBtn();
+
+function addDestroyBtn() {
+if (banks.length >= 3) {
+  destroyBtn.classList.remove('none');
+};
+};
+
+destroyBtn.addEventListener('click', () => {
+  banks = [];
+  bankListUl.innerHTML = renderBankList(banks);
+  saveBanks();
+  destroyBtn.classList.add('none');
+});

@@ -124,3 +124,11 @@ body {
   background-color: transparent;
   border-radius: 5px;
 }
+
+.destroy-btn {
+  margin-top: 10px;
+  height: 30px;
+  font-size: 12px;
+  background-color: transparent;
+  border-radius: 5px;
+}
