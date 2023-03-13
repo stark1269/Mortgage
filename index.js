@@ -35,6 +35,19 @@ bankDescWrap.classList.add('none');
 
 root.append(bankListWrap, bankDescWrap);
 
+const titleEL = document.createElement('h2');
+titleEL.textContent = 'Банків у списку ще не має';
+titleEL.classList.add('title')
+bankListWrap.append(titleEL);
+
+function toggleTitle() {
+  if (banks.length) {
+    titleEL.classList.add('none');
+  } else if (!banks.length) {
+    titleEL.classList.remove('none');
+  };
+};
+
 // 2. Написати функцію renderBankList, яка створює розмітку для всіх лішок списка банків і додає їх в середину ul.
 // Усе стилізувати і добавити в лівий блок.Також, туди ж добавити кнопку “”Добавити новий банк“”.
 
@@ -55,6 +68,7 @@ function renderBankList(array) {
 };
 
 loadBanks();
+toggleTitle();
 bankListUl.innerHTML = renderBankList(banks);
 
 // 3. При клікові на кожну з назв банку в лівій частині - рендерити інфу вибраного банка в правій частині.
@@ -106,7 +120,7 @@ bankListEl.addEventListener('click', onClickBtn);
 // 5. Написати логіку функції створення нового банку, яка викликатиметься через клік по кнопці “Добавити новий банк“.
 
 function renderNewBank() {
-  const markup = '<form class="new-bank-form"><input type="text" data="name" placeholder="Name" class="new-bank-input" required><input type="number" data="interest-rate" placeholder="Interest Rate" class="new-bank-input" required><input type="number" data="max-loan" placeholder="Max Loan" class="new-bank-input" required><input type="number" data="min-payment" placeholder="Min Payment" class="new-bank-input" required><input type="number" data="loan-term" placeholder="Loan Term" class="new-bank-input" required><button type="submit" class="new-bank-btn">Додати</button></form>';
+  const markup = '<form class="new-bank-form"><input type="text" data="name" placeholder="Назва банку" class="new-bank-input" required><input type="number" data="interest-rate" placeholder="Річна відсоткова ставка по іпотеці" class="new-bank-input" required><input type="number" data="max-loan" placeholder="Максимальна сума кредиту, яку надає банк" class="new-bank-input" required><input type="number" data="min-payment" placeholder="Мінімальний платіж" class="new-bank-input" required><input type="number" data="loan-term" placeholder="Термін кредиту" class="new-bank-input" required><button type="submit" class="new-bank-btn">Додати</button></form>';
   return markup
 };
 
@@ -115,7 +129,7 @@ function onClickAddBank() {
 
   bankListWrap.insertAdjacentHTML('beforeend', renderNewBank());
 
-  const formNewBank = document.querySelector('.new-bank-form')
+  const formNewBank = document.querySelector('.new-bank-form');
   const nameInput = document.querySelector('input[data="name"]');
   const interestRateInput = document.querySelector('input[data="interest-rate"]');
   const maxLoanInput = document.querySelector('input[data="max-loan"]');
@@ -129,7 +143,7 @@ function onClickAddBank() {
     bankListBtn.classList.remove('none');
     
   const newBank = {
-    id: new Date(),
+    id: Math.random(),
     name: nameInput.value.trim(),
     interestRate: interestRateInput.value.trim(),
     maxLoan: maxLoanInput.value.trim(),
@@ -140,6 +154,7 @@ function onClickAddBank() {
     banks.push(newBank);
     saveBanks();
     addDestroyBtn();
+    toggleTitle();
     bankListUl.innerHTML = renderBankList(banks);
     formNewBank.remove();
   };
@@ -154,6 +169,7 @@ function deleteBank(id, parent) {
   banks.splice(indexIdTask, 1);
 
   saveBanks();
+  toggleTitle();
   bankDescWrap.classList.add('none');
   addDestroyBtn();
   parent.remove();
@@ -161,8 +177,40 @@ function deleteBank(id, parent) {
 
 // 7. Написати логіку функції редагування банку.
 
-function editBank(id) {
-  console.log("Edit");
+    // interestRate: interestRateInput.value.trim(),
+    // maxLoan: maxLoanInput.value.trim(),
+    // minPayment: minPaymentInput.value.trim(),
+    // loanTerm: loanTermInput.value.trim(),
+
+function renderEditBank(array) {
+  return `<h2 class="edit-bank-title">Редагування</h2><form class="edit-bank-form"><input name="name" class="edit-bank-input" type="text" value="${array.name}"><input name="interestRate" class="edit-bank-input" type="number" value="${array.interestRate}"><input name="maxLoan" class="edit-bank-input" type="number" value="${array.maxLoan}"><input name="minPayment" class="edit-bank-input" type="number" value="${array.minPayment}"><input name="loanTerm" class="edit-bank-input" type="number" value="${array.loanTerm}"><button class="edit-bank-btn" type="submit">Зберегти</button></form>`
+};
+
+function editBank(id, parent) {
+  bankDescWrap.classList.remove('none');
+  bankDescWrap.innerHTML = '';
+  banks.map(item => {
+    if (item.id === Number(id)) {
+      bankDescWrap.insertAdjacentHTML('beforeend', renderEditBank(item));
+      const editBankForm = document.querySelector('.edit-bank-form');
+
+      function onClickSaveEdit(e) {
+        e.preventDefault()
+
+        const target = e.target.elements;
+        item.name = target.name.value.trim();
+        item.interestRate = target.interestRate.value.trim();
+        item.maxLoan = target.maxLoan.value.trim();
+        item.minPayment = target.minPayment.value.trim();
+        item.loanTerm = target.loanTerm.value.trim();
+        saveBanks();
+        bankListUl.innerHTML = renderBankList(banks);
+        bankDescWrap.classList.add('none');
+      };
+
+      editBankForm.addEventListener('submit', onClickSaveEdit);
+    };
+  });
 };
 
 // 8. Реалізувати роботу списка банків з локал сторедж. Щоб при перезавантаженні сторінки список зберігався.
@@ -206,5 +254,6 @@ destroyBtn.addEventListener('click', () => {
   banks = [];
   bankListUl.innerHTML = renderBankList(banks);
   saveBanks();
+  toggleTitle();
   destroyBtn.classList.add('none');
 });
