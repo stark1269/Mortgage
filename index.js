@@ -31,7 +31,7 @@ const bankListWrap = document.createElement('div');
 bankListWrap.classList.add('bank-list-wrap');
 const bankDescWrap = document.createElement('div');
 bankDescWrap.classList.add('bank-desc-wrap');
-bankDescWrap.classList.add('none');
+bankDescWrap.classList.add('bank-desc-tranform');
 
 root.append(bankListWrap, bankDescWrap);
 
@@ -54,7 +54,7 @@ function toggleTitle() {
 const bankListUl = document.createElement('ul');
 const bankListBtn = document.createElement('button');
 bankListBtn.classList.add('bank-list-button');
-bankListBtn.textContent = 'Добавити новий банк';
+bankListBtn.textContent = 'Додати новий банк';
 bankListBtn.type = 'button';
 bankListUl.classList.add('bank-list');
 bankListWrap.append(bankListUl, bankListBtn);
@@ -86,7 +86,7 @@ function renderBankDesc(array) {
 const bankListEl = document.querySelector('.bank-list');
 
 function onClickBankName(e) {
-  bankDescWrap.classList.remove('none');
+  bankDescWrap.classList.remove('bank-desc-tranform');
   bankDescWrap.innerHTML = '';
   banks.map(item => {
     if (e.target.textContent === item.name) {
@@ -169,7 +169,7 @@ function deleteBank(id, parent) {
 
   saveBanks();
   toggleTitle();
-  bankDescWrap.classList.add('none');
+  bankDescWrap.classList.add('bank-desc-tranform');
   addDestroyBtn();
   parent.remove();
 };
@@ -185,8 +185,8 @@ function renderEditBank(array) {
   return `<h2 class="edit-bank-title">Редагування</h2><form class="edit-bank-form"><input name="name" class="edit-bank-input" type="text" value="${array.name}"><input name="interestRate" class="edit-bank-input" type="number" value="${array.interestRate}"><input name="maxLoan" class="edit-bank-input" type="number" value="${array.maxLoan}"><input name="minPayment" class="edit-bank-input" type="number" value="${array.minPayment}"><input name="loanTerm" class="edit-bank-input" type="number" value="${array.loanTerm}"><button class="edit-bank-btn" type="submit">Зберегти</button></form>`
 };
 
-function editBank(id, parent) {
-  bankDescWrap.classList.remove('none');
+function editBank(id) {
+  bankDescWrap.classList.remove('bank-desc-tranform');
   bankDescWrap.innerHTML = '';
   banks.map(item => {
     if (item.id === Number(id)) {
@@ -204,7 +204,7 @@ function editBank(id, parent) {
         item.loanTerm = target.loanTerm.value.trim();
         saveBanks();
         bankListUl.innerHTML = renderBankList(banks);
-        bankDescWrap.classList.add('none');
+        bankDescWrap.classList.add('bank-desc-tranform');
       };
 
       editBankForm.addEventListener('submit', onClickSaveEdit);

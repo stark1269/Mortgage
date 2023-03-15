@@ -35,14 +35,33 @@ body {
   background-color: antiquewhite;
   border: 3px solid black;
   border-radius: 10%;
+  z-index: 1;
 }
 
 .bank-desc-wrap {
   padding: 40px;
-  min-width: 600px;
+  min-width: 500px;
   background-color: antiquewhite;
   border: 3px solid black;
   border-radius: 10%;
+  transform: translateX(0);
+  z-index: 0;
+  opacity: 1;
+  transition: transform 500ms linear, opacity 500ms linear;
+}
+
+.bank-desc-tranform {
+  transform: translateX(-520px);
+  opacity: 0;
+}
+
+.test {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.none {
+  display: none;
 }
 
 .bank-list {
@@ -82,10 +101,6 @@ body {
   font-size: 20px;
   background-color: transparent;
   border-radius: 5px;
-}
-
-.none {
-  display: none;
 }
 
 .bank-desc-list {
