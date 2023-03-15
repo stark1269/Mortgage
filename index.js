@@ -165,8 +165,7 @@ bankListBtn.addEventListener('click', onClickAddBank);
 // 6. Написати логіку функції видалення банку.
 
 function deleteBank(id, parent) {
-  const indexIdTask = banks.findIndex((bank) => id === bank.id);
-  banks.splice(indexIdTask, 1);
+  banks = banks.filter((bank) => Number(id) !== bank.id);
 
   saveBanks();
   toggleTitle();
